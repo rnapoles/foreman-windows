@@ -1,30 +1,50 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Windows.Forms;
 using System.IO;
+using System.Diagnostics;
 
 namespace Foreman
 {
     public partial class frmMain : Form
     {
+
+        enum ToolbarAction
+        {
+            Start, Stop, Clear
+        }
+
         private Procfile m_objProcfile = null;
+        private Dictionary<string, ProcfileEntry> m_processes = new Dictionary<string, ProcfileEntry>();
+        private Dictionary<string, RichTextBox> m_consoles = new Dictionary<string, RichTextBox>();
 
         public frmMain()
         {
             InitializeComponent();
-            this.FormClosing += (s,e) => m_objProcfile.Stop();
+
+            toolBar.ImageList = imageList;
+            tbiStart.ImageIndex = 0;
+            tbiStop.ImageIndex = 1;
+            tbiClear.ImageIndex = 2;
+
+            this.FormClosing += (s, e) =>
+            {
+                if (m_objProcfile != null)
+                {
+                    m_objProcfile.Stop();
+                }
+            };
 
             string[] args = Environment.GetCommandLineArgs();
             if (args.Length > 1 && File.Exists(args[1]))
+            {
                 OpenProcfile(args[1]);
+            }
             else if (File.Exists("Procfile"))
+            {
                 OpenProcfile("Procfile");
+            }
         }
 
         private void openProcfileToolStripMenuItem_Click(object sender, EventArgs e)
@@ -42,27 +62,67 @@ namespace Foreman
                 m_objProcfile.Stop();
             }
 
-            txtConsole.Clear();
+            tabControl.TabPages.Clear();
+            m_consoles.Clear();
+            m_processes.Clear();
 
             m_objProcfile = new Procfile(strFilename);
 
             m_objProcfile.TextReceived += delegate(ProcfileEntry objEntry, string strText)
             {
-                AppendText(objEntry.Header(), strText);
+                AppendText(objEntry, strText);
             };
 
             m_objProcfile.StatusReceived += delegate(string strText)
             {
-                AppendText(m_objProcfile.Header(), strText);
+                //AppendText(m_objProcfile, strText);
+                if (this.InvokeRequired)
+                {
+                    this.BeginInvoke((MethodInvoker)delegate
+                    {
+                        Text = strText;
+                    });
+                }
+                
             };
+
+            foreach(var item in m_objProcfile.ProcfileEntries)
+            {
+                var richTextBox = new System.Windows.Forms.RichTextBox();
+                var tabPage = new System.Windows.Forms.TabPage();
+
+                richTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
+                //txtConsole.Name = "txtConsole";
+                richTextBox.Text = "";
+                richTextBox.ForeColor = Color.White;
+                richTextBox.BackColor = Color.Black;
+
+                //tabPage.SuspendLayout();
+                //tabPage.BackColor = Color.Violet;
+                var name = item.Name;
+                tabPage.Text = name;
+                tabPage.Controls.Add(richTextBox);
+                m_consoles.Add(name, richTextBox);
+                m_processes.Add(name, item);
+                tabControl.Controls.Add(tabPage);
+            }
 
             m_objProcfile.Start();
         }
 
-        private void AppendText(string strHeader, string strText)
+        private void AppendText(ProcfileEntry entry, string strText)
         {
             if (strText == null)
                 return;
+
+            RichTextBox txtConsole = null;
+            bool hasKey = m_consoles.TryGetValue(entry.Name, out txtConsole);
+            if (!hasKey)
+            {
+                return;
+            }
+
+            var strHeader = entry.Header();
 
             if (this.InvokeRequired)
             {
@@ -70,10 +130,13 @@ namespace Foreman
                 {
                     foreach (string strLine in strText.Split('\n'))
                     {
-                        txtConsole.SelectedRtf = String.Format(@"{{\rtf1\ansi {0} {1} {2}\line}}", ColorTable(), strHeader, strLine);
+                        var text = String.Format(@"{{\rtf1\ansi {0} {1} {2}\line}}", ColorTable(), strHeader, strLine);
+                        txtConsole.Select(txtConsole.TextLength, 0);
+                        txtConsole.SelectedRtf = text;
                     }
-                    txtConsole.SelectionStart = txtConsole.Text.Length;
-                    txtConsole.ScrollToCaret();
+                    
+                    //txtConsole.SelectionStart = txtConsole.Text.Length;
+                    //txtConsole.ScrollToCaret();
                 });
             }
         }
@@ -93,12 +156,103 @@ namespace Foreman
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (m_objProcfile != null)
+            /*if (m_objProcfile != null)
             {
                 m_objProcfile.Stop();
-            }
+            }*/
 
             Application.Exit();
         }
+
+        private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            this.Visible = false;
+            Process.GetCurrentProcess().KillAllSubProcesses();
+        }
+
+        private void tabControl_TabIndexChanged(object sender, EventArgs e)
+        {
+            MessageBox.Show(tabControl.TabPages[tabControl.TabIndex].Name);
+        }
+
+        private void tbiStart_Click(object sender, EventArgs e)
+        {
+            this.executeAction(ToolbarAction.Start);
+        }
+
+        private void tbiStop_Click(object sender, EventArgs e)
+        {
+            this.executeAction(ToolbarAction.Stop);
+        }
+
+        private void tbiClear_Click(object sender, EventArgs e)
+        {
+            this.executeAction(ToolbarAction.Clear);
+        }
+
+        private void executeAction(ToolbarAction action)
+        {
+            var active = tabControl.TabPages.Count > 0;
+            active = active && m_processes.Count > 0;
+
+            if (!active)
+            {
+                return;
+            }
+
+            int index = tabControl.SelectedIndex;
+            TabPage tabPage = tabControl.TabPages[index];
+            string text = tabPage.Text;
+            ProcfileEntry proc = null;
+            bool hasKey = m_processes.TryGetValue(text, out proc);
+            if (!hasKey)
+            {
+                return;
+            }
+
+            if (action == ToolbarAction.Start)
+            {
+                proc.Start();
+            } else if(action == ToolbarAction.Stop)
+            {
+                proc.Stop();
+            } else
+            {
+                RichTextBox console;
+                hasKey = m_consoles.TryGetValue(text, out console);
+                if (hasKey)
+                {
+                    console.Clear();
+                }
+            }
+
+        }
+
+        private void timer_Tick(object sender, EventArgs e)
+        {
+            var active = tabControl.TabPages.Count > 0;
+            active = active && m_processes.Count > 0;
+
+            if (active)
+            {
+                int index = tabControl.SelectedIndex;
+                TabPage tabPage = tabControl.TabPages[index];
+                string text = tabPage.Text;
+                ProcfileEntry proc = null;
+                bool hasKey = m_processes.TryGetValue(text, out proc);
+                if (hasKey)
+                {
+                    tbiStart.Enabled = !proc.Active;
+                    tbiStop.Enabled = proc.Active;
+                }
+            }
+
+            toolBar.Enabled = active;
+
+
+            //Text = $"{counter++}";
+
+        }
+
     }
 }

@@ -13,6 +13,11 @@ namespace Foreman
         [STAThread]
         static void Main()
         {
+
+#if DEBUG
+            Console.WriteLine("Mode=Debug");
+#endif
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new frmMain());

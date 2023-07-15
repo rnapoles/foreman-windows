@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using DotNetEnv;
 
 namespace Foreman
 {
@@ -14,22 +17,31 @@ namespace Foreman
         private string m_strFilename = null;
         private List<ProcfileEntry> m_arrProcfileEntries = null;
         private bool m_blnStarted = false;
+        private Dictionary<string, string> m_envVariables = new Dictionary<string, string>();
 
         public Procfile(string strFilename)
         {
             m_strFilename = strFilename;
             m_arrProcfileEntries = new List<ProcfileEntry>();
+            this.OpenEnvFile(strFilename);
 
-            string strContents = System.IO.File.ReadAllText(strFilename);
             int intCurrent = 1;
+            string strContents = File.ReadAllText(strFilename);
+            char[] charSeparators = new char[] { ':' };
 
             foreach (string strLine in strContents.Split('\n'))
             {
-                string[] arrLine = strLine.Split(':');
 
-                if (arrLine.Length == 2)
+                if (strLine.StartsWith("#"))
                 {
-                    ProcfileEntry objProcfileEntry = new ProcfileEntry(this, intCurrent, arrLine[0].Trim(), arrLine[1].Trim());
+                    continue;
+                }
+
+                string[] arrLine = strLine.Split(charSeparators, 2);
+                if (arrLine.Length >= 2)
+                {
+                    
+                    ProcfileEntry objProcfileEntry = new ProcfileEntry(this, intCurrent, arrLine[0].Trim(), arrLine[1].Trim(), m_envVariables);
                     objProcfileEntry.TextReceived += delegate(ProcfileEntry objEntry, string strData)
                     {
                         TextReceived(objEntry, strData);
@@ -38,6 +50,18 @@ namespace Foreman
                     intCurrent += 1;
                 }
             }
+        }
+
+        private void OpenEnvFile(string strFilename)
+        {
+
+            var path = new FileInfo(strFilename).DirectoryName + Path.DirectorySeparatorChar + ".env";
+            if (File.Exists(path))
+            {
+                m_envVariables.Clear();
+                m_envVariables = Env.Load(path).ToDictionary();
+            }
+            
         }
 
         public string Header()
@@ -79,14 +103,20 @@ namespace Foreman
             TextReceived(objEntry, strText);
         }
 
-        public event TextReceivedHandler TextReceived;
-        public event StatusRecievedHandler StatusReceived;
-
         public int LongestNameLength()
         {
-            int intLongestName = m_arrProcfileEntries.Select( objEntry => objEntry.Name.Length ).Max();
+            int intLongestName = 0;
+            if (m_arrProcfileEntries.Count > 0)
+            {
+                intLongestName = m_arrProcfileEntries.Select(objEntry => objEntry.Name.Length).Max();
+            }
+
             return ((intLongestName > 6) ? intLongestName : 6);
         }
+
+        public event TextReceivedHandler TextReceived;
+
+        public event StatusRecievedHandler StatusReceived;
 
         public string FileName
         {
@@ -94,6 +124,11 @@ namespace Foreman
             {
                 return (m_strFilename);
             }
+        }
+
+        public IReadOnlyList<ProcfileEntry> ProcfileEntries
+        {
+            get { return m_arrProcfileEntries.AsReadOnly(); }
         }
     }
 }

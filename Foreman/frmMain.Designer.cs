@@ -28,14 +28,25 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
             this.mnsMain = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openProcfileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.stopStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dlgOpenProcfile = new System.Windows.Forms.OpenFileDialog();
-            this.txtConsole = new System.Windows.Forms.RichTextBox();
-            this.stopStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolBar = new System.Windows.Forms.ToolStrip();
+            this.tbiStart = new System.Windows.Forms.ToolStripButton();
+            this.tbiStop = new System.Windows.Forms.ToolStripButton();
+            this.tbiClear = new System.Windows.Forms.ToolStripButton();
+            this.imageList = new System.Windows.Forms.ImageList(this.components);
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.tabControl = new System.Windows.Forms.TabControl();
+            this.timer = new System.Windows.Forms.Timer(this.components);
             this.mnsMain.SuspendLayout();
+            this.toolBar.SuspendLayout();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // mnsMain
@@ -65,6 +76,13 @@
             this.openProcfileToolStripMenuItem.Text = "&Open Procfile...";
             this.openProcfileToolStripMenuItem.Click += new System.EventHandler(this.openProcfileToolStripMenuItem_Click);
             // 
+            // stopStripMenuItem
+            // 
+            this.stopStripMenuItem.Name = "stopStripMenuItem";
+            this.stopStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.stopStripMenuItem.Text = "Stop";
+            this.stopStripMenuItem.Click += new System.EventHandler(this.stopStripMenuItem_Click);
+            // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
@@ -76,36 +94,97 @@
             // 
             this.dlgOpenProcfile.Filter = "Procfiles|Procfile*";
             // 
-            // txtConsole
+            // toolBar
             // 
-            this.txtConsole.BackColor = System.Drawing.Color.Black;
-            this.txtConsole.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtConsole.ForeColor = System.Drawing.Color.White;
-            this.txtConsole.Location = new System.Drawing.Point(13, 28);
-            this.txtConsole.Name = "txtConsole";
-            this.txtConsole.Size = new System.Drawing.Size(781, 471);
-            this.txtConsole.TabIndex = 2;
-            this.txtConsole.Text = "";
+            this.toolBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tbiStart,
+            this.tbiStop,
+            this.tbiClear});
+            this.toolBar.Location = new System.Drawing.Point(0, 24);
+            this.toolBar.Name = "toolBar";
+            this.toolBar.Size = new System.Drawing.Size(806, 25);
+            this.toolBar.TabIndex = 3;
+            this.toolBar.Text = "toolStrip1";
             // 
-            // stopStripMenuItem
+            // tbiStart
             // 
-            this.stopStripMenuItem.Name = "stopStripMenuItem";
-            this.stopStripMenuItem.Size = new System.Drawing.Size(155, 22);
-            this.stopStripMenuItem.Text = "Stop";
-            this.stopStripMenuItem.Click += new System.EventHandler(this.stopStripMenuItem_Click);
+            this.tbiStart.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tbiStart.Image = ((System.Drawing.Image)(resources.GetObject("tbiStart.Image")));
+            this.tbiStart.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbiStart.Name = "tbiStart";
+            this.tbiStart.Size = new System.Drawing.Size(23, 22);
+            this.tbiStart.Text = "Start";
+            this.tbiStart.Click += new System.EventHandler(this.tbiStart_Click);
+            // 
+            // tbiStop
+            // 
+            this.tbiStop.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tbiStop.Image = ((System.Drawing.Image)(resources.GetObject("tbiStop.Image")));
+            this.tbiStop.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbiStop.Name = "tbiStop";
+            this.tbiStop.Size = new System.Drawing.Size(23, 22);
+            this.tbiStop.Text = "Stop";
+            this.tbiStop.Click += new System.EventHandler(this.tbiStop_Click);
+            // 
+            // tbiClear
+            // 
+            this.tbiClear.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tbiClear.Image = ((System.Drawing.Image)(resources.GetObject("tbiClear.Image")));
+            this.tbiClear.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbiClear.Name = "tbiClear";
+            this.tbiClear.Size = new System.Drawing.Size(23, 22);
+            this.tbiClear.Text = "Clear console";
+            this.tbiClear.Click += new System.EventHandler(this.tbiClear_Click);
+            // 
+            // imageList
+            // 
+            this.imageList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList.ImageStream")));
+            this.imageList.TransparentColor = System.Drawing.Color.Transparent;
+            this.imageList.Images.SetKeyName(0, "start.png");
+            this.imageList.Images.SetKeyName(1, "stop.png");
+            this.imageList.Images.SetKeyName(2, "clear.png");
+            // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.tabControl);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel1.Location = new System.Drawing.Point(0, 49);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(806, 462);
+            this.panel1.TabIndex = 4;
+            // 
+            // tabControl
+            // 
+            this.tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl.Location = new System.Drawing.Point(0, 0);
+            this.tabControl.Multiline = true;
+            this.tabControl.Name = "tabControl";
+            this.tabControl.SelectedIndex = 0;
+            this.tabControl.Size = new System.Drawing.Size(806, 462);
+            this.tabControl.TabIndex = 3;
+            // 
+            // timer
+            // 
+            this.timer.Enabled = true;
+            this.timer.Tick += new System.EventHandler(this.timer_Tick);
             // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(806, 511);
-            this.Controls.Add(this.txtConsole);
+            this.Controls.Add(this.panel1);
+            this.Controls.Add(this.toolBar);
             this.Controls.Add(this.mnsMain);
             this.MainMenuStrip = this.mnsMain;
             this.Name = "frmMain";
             this.Text = "Foreman";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmMain_FormClosing);
             this.mnsMain.ResumeLayout(false);
             this.mnsMain.PerformLayout();
+            this.toolBar.ResumeLayout(false);
+            this.toolBar.PerformLayout();
+            this.panel1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -118,8 +197,15 @@
         private System.Windows.Forms.ToolStripMenuItem openProcfileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.OpenFileDialog dlgOpenProcfile;
-        private System.Windows.Forms.RichTextBox txtConsole;
         private System.Windows.Forms.ToolStripMenuItem stopStripMenuItem;
+        private System.Windows.Forms.ToolStrip toolBar;
+        private System.Windows.Forms.ToolStripButton tbiStart;
+        private System.Windows.Forms.ToolStripButton tbiStop;
+        private System.Windows.Forms.ToolStripButton tbiClear;
+        private System.Windows.Forms.ImageList imageList;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.TabControl tabControl;
+        private System.Windows.Forms.Timer timer;
     }
 }
 

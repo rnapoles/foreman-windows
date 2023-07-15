@@ -1,97 +1,72 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
+using System.Linq;
+using System.Management;
+using System.Text;
+using System.Threading.Tasks;
 
-/// <summary>
-/// A utility class to determine a process parent.
-/// </summary>
-[StructLayout(LayoutKind.Sequential)]
-public struct ProcessUtilities
+namespace Foreman
 {
-    // These members must match PROCESS_BASIC_INFORMATION
-    internal IntPtr Reserved1;
-    internal IntPtr PebBaseAddress;
-    internal IntPtr Reserved2_0;
-    internal IntPtr Reserved2_1;
-    internal IntPtr UniqueProcessId;
-    internal IntPtr InheritedFromUniqueProcessId;
-
-    [DllImport("ntdll.dll")]
-    private static extern int NtQueryInformationProcess(IntPtr processHandle, int processInformationClass, ref ProcessUtilities processInformation, int processInformationLength, out int returnLength);
-
-    /// <summary>
-    /// Gets the parent process of the current process.
-    /// </summary>
-    /// <returns>An instance of the Process class.</returns>
-    public static Process GetParentProcess()
+    public static class ProcessExtensions
     {
-        return GetParentProcess(Process.GetCurrentProcess().Handle);
-    }
 
-    /// <summary>
-    /// Gets the parent process of specified process.
-    /// </summary>
-    /// <param name="id">The process id.</param>
-    /// <returns>An instance of the Process class.</returns>
-    public static Process GetParentProcess(int id)
-    {
-        Process process = Process.GetProcessById(id);
-        return GetParentProcess(process.Handle);
-    }
-
-    /// <summary>
-    /// Gets the parent process of a specified process.
-    /// </summary>
-    /// <param name="handle">The process handle.</param>
-    /// <returns>An instance of the Process class.</returns>
-    public static Process GetParentProcess(IntPtr handle)
-    {
-        ProcessUtilities pbi = new ProcessUtilities();
-        int returnLength;
-        int status = NtQueryInformationProcess(handle, 0, ref pbi, Marshal.SizeOf(pbi), out returnLength);
-        if (status != 0)
-            throw new Win32Exception(status);
-
-        try
+        public static void KillAllSubProcesses(this Process process)
         {
-            return Process.GetProcessById(pbi.InheritedFromUniqueProcessId.ToInt32());
-        }
-        catch (ArgumentException)
-        {
-            // not found
-            return null;
-        }
-    }
 
-    /// <summary>
-    /// Gets a Dictionary of process IDs by their parent processID
-    /// </summary>
-    public static Dictionary<int, List<int>> PidsByParent()
-    {
-        Dictionary<int, List<int>> arrPidsByParent = new Dictionary<int, List<int>>();
-
-        foreach (Process objProcess in Process.GetProcesses())
-        {
-            try
+            if(process is null)
             {
-                int intChildPid = objProcess.Id;
-                int intParentPid = GetParentProcess(intChildPid).Id;
+                return;
+            }
 
-                if (!(arrPidsByParent.ContainsKey(intParentPid)))
+            if (process.HasExited)
+            {
+                return;
+            }
+
+            int parentProcessId = process.Id;
+
+            //Console.WriteLine($"Finding processes spawned by process {process.ProcessName}[{parentProcessId}]");
+
+            // NOTE: Process Ids are reused!
+            ManagementObjectSearcher searcher = new ManagementObjectSearcher(
+                "SELECT * " +
+                "FROM Win32_Process " +
+                "WHERE ParentProcessId=" + parentProcessId);
+            ManagementObjectCollection collection = searcher.Get();
+            if (collection.Count > 0)
+            {
+                //Console.WriteLine("Killing [" + collection.Count + "] processes spawned by process with Id [" + process.ProcessName + "]");
+                foreach (var item in collection)
                 {
-                    arrPidsByParent[intParentPid] = new List<int>();
-                }
+                    UInt32 childProcessId = (UInt32)item["ProcessId"];
+                    if ((int)childProcessId != Process.GetCurrentProcess().Id)
+                    {
 
-                arrPidsByParent[intParentPid].Add(intChildPid);
-            }
-            catch
-            {
+                        Process childProcess = null;
+                        try
+                        {
+                            childProcess = Process.GetProcessById((int)childProcessId);
+                        }
+                        catch (Exception)
+                        {
+
+                        }
+
+                        //Console.WriteLine("Killing child process [" + childProcess.ProcessName + "] with Id [" + childProcessId + "]");
+                        if(childProcess != null)
+                        {
+                            childProcess.KillAllSubProcesses();
+                            if (!childProcess.HasExited)
+                            {
+                                childProcess.Kill();
+                            }
+                        }
+
+                    }
+                }
             }
         }
 
-        
-        return (arrPidsByParent);
     }
 }
