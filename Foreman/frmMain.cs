@@ -20,23 +20,39 @@ namespace Foreman
         private Procfile m_objProcfile = null;
         private Dictionary<string, ProcfileEntry> m_processes = new();
         private Dictionary<string, FastColoredTextBox> m_consoles = new();
+
         private TextStyle blueStyle = new TextStyle(Brushes.Blue, null, FontStyle.Underline);
         private TextStyle greenStyle = new TextStyle(Brushes.Green, null, FontStyle.Bold);
         private TextStyle yellowStyle = new TextStyle(Brushes.Yellow, null, FontStyle.Bold);
         private TextStyle redStyle = new TextStyle(Brushes.Red, null, FontStyle.Bold);
+
         private string m_urlRegex = @"([a-zA-Z0-9]+:\/\/)(([^:@/?#\[\]\n\r]*)(:([^@/?#\[\]\n\r]*))?@)?(([^/:?#\[\]\n\r]+)|(\[[^\[\]]+\\n\r]))?(:([0-9]*))?(/[^\?#\n\r]*)?(\?([^#\n\r]+)?)?(#([^\n\r]))?";
         private string m_datetimeRegex = @"\[[a-zA-Z]+\s+[a-zA-Z]+\s+\d+\s+\d+:\d+:\d+\s\d+\]";
         private string m_httpVerbRegex = @"\bGET|POST|PUT|PATCH|DELETE\b";
         private string m_httpStatusRegex = @"\[\d+\]";
+        //private string m_logLevelRegex = @"ERROR|WARN|DEBUG|TRACE";
 
         public frmMain()
         {
             InitializeComponent();
 
+            this.KeyPreview = true;
+            toolBar.ImageScalingSize = new Size(24, 24);
             toolBar.ImageList = imageList;
-            tbiStart.ImageIndex = 0;
-            tbiStop.ImageIndex = 1;
-            tbiClear.ImageIndex = 2;
+            toolBar.Height = 32;
+
+            int i = 0;
+            foreach (var item in toolBar.Items)
+            {
+                if(item is ToolStripButton button)
+                {
+                    button.AutoSize = false;
+                    button.Height = 24;
+                    button.Width = 24;
+                    button.ImageIndex = i++;
+                }
+            }
+
 
             this.FormClosing += (s, e) =>
             {
@@ -341,6 +357,24 @@ namespace Foreman
             } else
             {
                 this.ShowInTaskbar = true;
+            }
+        }
+
+        private void frmMain_KeyDown(object sender, KeyEventArgs e)
+        {
+            var key = e.KeyCode.ToString();
+            if (e.Control == true &&  key == "L")
+            {
+                int index = tabControl.SelectedIndex;
+                TabPage tabPage = tabControl.TabPages[index];
+                string text = tabPage.Text;
+
+                FastColoredTextBox console;
+                var hasKey = m_consoles.TryGetValue(text, out console);
+                if (hasKey)
+                {
+                    console.Clear();
+                }
             }
         }
     }

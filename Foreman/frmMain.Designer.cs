@@ -106,7 +106,6 @@
             this.toolBar.Name = "toolBar";
             this.toolBar.Size = new System.Drawing.Size(806, 25);
             this.toolBar.TabIndex = 3;
-            this.toolBar.Text = "toolStrip1";
             // 
             // tbiStart
             // 
@@ -136,6 +135,7 @@
             this.tbiClear.Name = "tbiClear";
             this.tbiClear.Size = new System.Drawing.Size(23, 22);
             this.tbiClear.Text = "Clear console";
+            this.tbiClear.ToolTipText = "Clear console (Ctrl + L)";
             this.tbiClear.Click += new System.EventHandler(this.tbiClear_Click);
             // 
             // imageList
@@ -190,6 +190,7 @@
             this.Name = "frmMain";
             this.Text = "Foreman";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmMain_FormClosing);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.frmMain_KeyDown);
             this.mnsMain.ResumeLayout(false);
             this.mnsMain.PerformLayout();
             this.toolBar.ResumeLayout(false);

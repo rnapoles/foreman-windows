@@ -1,8 +1,8 @@
-## Foreman windows in CSharp.
+## Foreman for windows
 
 Manage Procfile-based applications
 
-[Foreman](https://github.com/ddollar/foreman)
+[Foreman](https://github.com/ddollar/foreman) in CSharp.
 
 ### Installation
 
