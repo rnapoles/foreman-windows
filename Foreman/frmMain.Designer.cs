@@ -44,6 +44,7 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.timer = new System.Windows.Forms.Timer(this.components);
+            this.systrayIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.mnsMain.SuspendLayout();
             this.toolBar.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -58,6 +59,7 @@
             this.mnsMain.Size = new System.Drawing.Size(806, 24);
             this.mnsMain.TabIndex = 1;
             this.mnsMain.Text = "menuStrip1";
+            this.mnsMain.Resize += new System.EventHandler(this.frmMain_Resize);
             // 
             // fileToolStripMenuItem
             // 
@@ -168,6 +170,13 @@
             this.timer.Enabled = true;
             this.timer.Tick += new System.EventHandler(this.timer_Tick);
             // 
+            // systrayIcon
+            // 
+            this.systrayIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("systrayIcon.Icon")));
+            this.systrayIcon.Text = "Foreman";
+            this.systrayIcon.Visible = true;
+            this.systrayIcon.DoubleClick += new System.EventHandler(this.systrayIcon_DoubleClick);
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -207,6 +216,7 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Timer timer;
         private System.Windows.Forms.TabControl tabControl;
+        private System.Windows.Forms.NotifyIcon systrayIcon;
     }
 }
 

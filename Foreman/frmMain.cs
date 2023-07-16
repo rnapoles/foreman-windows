@@ -326,5 +326,22 @@ namespace Foreman
 
         }
 
+        private void systrayIcon_DoubleClick(object sender, EventArgs e)
+        {
+            this.WindowState = FormWindowState.Normal;
+            this.Activate();
+            
+        }
+
+        private void frmMain_Resize(object sender, EventArgs e)
+        {
+            if (WindowState == FormWindowState.Minimized)
+            {
+                this.ShowInTaskbar = false;
+            } else
+            {
+                this.ShowInTaskbar = true;
+            }
+        }
     }
 }
