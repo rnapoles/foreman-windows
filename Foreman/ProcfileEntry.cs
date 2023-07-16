@@ -165,6 +165,7 @@ namespace Foreman
             m_objProcess.Exited += ProcessExited;
 
             TextReceived(this, "starting: " + m_strCommand);
+
             m_objProcess.Start();
             //Process process = m_objProcess.Parent();
             //TextReceived(this, "Parent: " + process.ProcessName);
@@ -224,7 +225,6 @@ namespace Foreman
         {
             this.Active = false;
             m_objProcfile.Info(this, "process terminated");
-            m_objProcfile.Stop();
         }
     }
 }

@@ -44,7 +44,11 @@ namespace Foreman
                     ProcfileEntry objProcfileEntry = new ProcfileEntry(this, intCurrent, arrLine[0].Trim(), arrLine[1].Trim(), m_envVariables);
                     objProcfileEntry.TextReceived += delegate(ProcfileEntry objEntry, string strData)
                     {
-                        TextReceived(objEntry, strData);
+                        if(TextReceived != null)
+                        {
+                            //Debug.WriteLine(strData);
+                            TextReceived(objEntry, strData);
+                        }
                     };
                     m_arrProcfileEntries.Add(objProcfileEntry);
                     intCurrent += 1;
@@ -100,7 +104,10 @@ namespace Foreman
 
         public void Info(ProcfileEntry objEntry, string strText)
         {
-            TextReceived(objEntry, strText);
+            if(TextReceived != null)
+            {
+                TextReceived(objEntry, strText);
+            }
         }
 
         public int LongestNameLength()

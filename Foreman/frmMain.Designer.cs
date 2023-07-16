@@ -42,8 +42,8 @@
             this.tbiClear = new System.Windows.Forms.ToolStripButton();
             this.imageList = new System.Windows.Forms.ImageList(this.components);
             this.panel1 = new System.Windows.Forms.Panel();
-            this.tabControl = new System.Windows.Forms.TabControl();
             this.timer = new System.Windows.Forms.Timer(this.components);
+            this.tabControl = new System.Windows.Forms.TabControl();
             this.mnsMain.SuspendLayout();
             this.toolBar.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -153,6 +153,11 @@
             this.panel1.Size = new System.Drawing.Size(806, 462);
             this.panel1.TabIndex = 4;
             // 
+            // timer
+            // 
+            this.timer.Enabled = true;
+            this.timer.Tick += new System.EventHandler(this.timer_Tick);
+            // 
             // tabControl
             // 
             this.tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -162,11 +167,6 @@
             this.tabControl.SelectedIndex = 0;
             this.tabControl.Size = new System.Drawing.Size(806, 462);
             this.tabControl.TabIndex = 3;
-            // 
-            // timer
-            // 
-            this.timer.Enabled = true;
-            this.timer.Tick += new System.EventHandler(this.timer_Tick);
             // 
             // frmMain
             // 
@@ -204,8 +204,8 @@
         private System.Windows.Forms.ToolStripButton tbiClear;
         private System.Windows.Forms.ImageList imageList;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.TabControl tabControl;
         private System.Windows.Forms.Timer timer;
+        private System.Windows.Forms.TabControl tabControl;
     }
 }
 

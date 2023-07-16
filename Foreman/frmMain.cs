@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.IO;
 using System.Diagnostics;
+using FastColoredTextBoxNS;
 
 namespace Foreman
 {
@@ -17,7 +18,7 @@ namespace Foreman
 
         private Procfile m_objProcfile = null;
         private Dictionary<string, ProcfileEntry> m_processes = new Dictionary<string, ProcfileEntry>();
-        private Dictionary<string, RichTextBox> m_consoles = new Dictionary<string, RichTextBox>();
+        private Dictionary<string, FastColoredTextBox> m_consoles = new Dictionary<string, FastColoredTextBox>();
 
         public frmMain()
         {
@@ -67,9 +68,9 @@ namespace Foreman
             m_processes.Clear();
 
             m_objProcfile = new Procfile(strFilename);
-
-            m_objProcfile.TextReceived += delegate(ProcfileEntry objEntry, string strText)
+            m_objProcfile.TextReceived += (ProcfileEntry objEntry, string strText) =>
             {
+                //Debug.WriteLine(strText);
                 AppendText(objEntry, strText);
             };
 
@@ -88,7 +89,7 @@ namespace Foreman
 
             foreach(var item in m_objProcfile.ProcfileEntries)
             {
-                var richTextBox = new System.Windows.Forms.RichTextBox();
+                var richTextBox = new FastColoredTextBox();
                 var tabPage = new System.Windows.Forms.TabPage();
 
                 richTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -115,7 +116,9 @@ namespace Foreman
             if (strText == null)
                 return;
 
-            RichTextBox txtConsole = null;
+            Debug.WriteLine($"===> {strText}");
+
+            FastColoredTextBox txtConsole = null;
             bool hasKey = m_consoles.TryGetValue(entry.Name, out txtConsole);
             if (!hasKey)
             {
@@ -126,19 +129,29 @@ namespace Foreman
 
             if (this.InvokeRequired)
             {
-                this.BeginInvoke((MethodInvoker)delegate
+                this.BeginInvoke((MethodInvoker) delegate
                 {
-                    foreach (string strLine in strText.Split('\n'))
-                    {
-                        var text = String.Format(@"{{\rtf1\ansi {0} {1} {2}\line}}", ColorTable(), strHeader, strLine);
-                        txtConsole.Select(txtConsole.TextLength, 0);
-                        txtConsole.SelectedRtf = text;
-                    }
-                    
-                    //txtConsole.SelectionStart = txtConsole.Text.Length;
-                    //txtConsole.ScrollToCaret();
+                    this.AppendText(strText, txtConsole);
                 });
+            } else
+            {
+                this.AppendText(strText, txtConsole);
             }
+        }
+
+        private void AppendText(string strText, FastColoredTextBox txtConsole)
+        {
+            Debug.WriteLine($"**** {strText}");
+            foreach (string strLine in strText.Split('\n'))
+            {
+                //var text = String.Format(@"{{\rtf1\ansi {0} {1} {2}\line}}", ColorTable(), strHeader, strLine);
+                //txtConsole.Select(txtConsole.TextLength, 0);
+                //txtConsole.SelectedRtf = text;
+                txtConsole.AppendText($"{strLine}\n");
+            }
+
+            //txtConsole.SelectionStart = txtConsole.Text.Length;
+            //txtConsole.ScrollToCaret();
         }
 
         private string ColorTable()
@@ -218,7 +231,7 @@ namespace Foreman
                 proc.Stop();
             } else
             {
-                RichTextBox console;
+                FastColoredTextBox console;
                 hasKey = m_consoles.TryGetValue(text, out console);
                 if (hasKey)
                 {
