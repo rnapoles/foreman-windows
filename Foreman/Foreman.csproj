@@ -83,6 +83,7 @@
     <Compile Include="DotNetEnv\IValue.cs" />
     <Compile Include="DotNetEnv\LoadOptions.cs" />
     <Compile Include="DotNetEnv\Parsers.cs" />
+    <Compile Include="PortFinderService.cs" />
     <Compile Include="ProcessUtilities.cs" />
     <Compile Include="ProcfileEntry.cs" />
     <Compile Include="Procfile.cs" />

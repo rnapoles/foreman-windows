@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Diagnostics;
 using FastColoredTextBoxNS;
+using System.Text.RegularExpressions;
 
 namespace Foreman
 {
@@ -19,6 +20,14 @@ namespace Foreman
         private Procfile m_objProcfile = null;
         private Dictionary<string, ProcfileEntry> m_processes = new Dictionary<string, ProcfileEntry>();
         private Dictionary<string, FastColoredTextBox> m_consoles = new Dictionary<string, FastColoredTextBox>();
+        private TextStyle blueStyle = new TextStyle(Brushes.Blue, null, FontStyle.Underline);
+        private TextStyle greenStyle = new TextStyle(Brushes.Green, null, FontStyle.Bold);
+        private TextStyle yellowStyle = new TextStyle(Brushes.Yellow, null, FontStyle.Bold);
+        private TextStyle redStyle = new TextStyle(Brushes.Red, null, FontStyle.Bold);
+        private string m_urlRegex = @"([a-zA-Z0-9]+:\/\/)(([^:@/?#\[\]\n\r]*)(:([^@/?#\[\]\n\r]*))?@)?(([^/:?#\[\]\n\r]+)|(\[[^\[\]]+\\n\r]))?(:([0-9]*))?(/[^\?#\n\r]*)?(\?([^#\n\r]+)?)?(#([^\n\r]))?";
+        private string m_datetimeRegex = @"\[[a-zA-Z]+\s+[a-zA-Z]+\s+\d+\s+\d+:\d+:\d+\s\d+\]";
+        private string m_httpVerbRegex = @"\bGET|POST|PUT|PATCH|DELETE\b";
+        private string m_httpStatusRegex = @"\[\d+\]";
 
         public frmMain()
         {
@@ -88,26 +97,84 @@ namespace Foreman
 
             foreach(var item in m_objProcfile.ProcfileEntries)
             {
-                var richTextBox = new FastColoredTextBox();
+                var console = new FastColoredTextBox();
                 var tabPage = new System.Windows.Forms.TabPage();
 
-                richTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
+                console.Dock = System.Windows.Forms.DockStyle.Fill;
                 //txtConsole.Name = "txtConsole";
-                richTextBox.Text = "";
-                richTextBox.ForeColor = Color.White;
-                richTextBox.BackColor = Color.Black;
+                console.Text = "";
+                console.ReadOnly = true;
+                console.ForeColor = Color.White;
+                console.BackColor = Color.Black;
+                console.TextChangedDelayed += Console_TextChangedDelayed;
+                console.MouseDown += Console_MouseDown;
+                console.MouseMove += Console_MouseMove;
+
 
                 //tabPage.SuspendLayout();
                 //tabPage.BackColor = Color.Violet;
                 var name = item.Name;
                 tabPage.Text = name;
-                tabPage.Controls.Add(richTextBox);
-                m_consoles.Add(name, richTextBox);
+                tabPage.Controls.Add(console);
+                m_consoles.Add(name, console);
                 m_processes.Add(name, item);
                 tabControl.Controls.Add(tabPage);
             }
 
             m_objProcfile.Start();
+        }
+
+        private void Console_MouseMove(object sender, MouseEventArgs e)
+        {
+            var fctb = (FastColoredTextBox)sender;
+            var p = fctb.PointToPlace(e.Location);
+            if (GetUrl(fctb, p) != null)
+                fctb.Cursor = Cursors.Hand;
+            else
+                fctb.Cursor = Cursors.IBeam;
+        }
+
+        private string GetUrl(FastColoredTextBox fctb, Place p)
+        {
+
+            var url = fctb.GetRange(p, p).GetFragment(@"[\S]").Text;
+            Match match = Regex.Match(url, m_urlRegex);
+
+            if (match.Success)
+            {
+                return match.Value;
+            }
+
+            return null;
+        }
+
+        private void Console_MouseDown(object sender, MouseEventArgs e)
+        {
+
+            var fctb = (FastColoredTextBox)sender;
+            var p = fctb.PointToPlace(e.Location);
+            var url = GetUrl(fctb, p);
+
+            if (url != null)
+            {
+                //MessageBox.Show(match.Value);
+                Process.Start(url);
+            }
+        }
+
+        private void Console_TextChangedDelayed(object sender, TextChangedEventArgs e)
+        {
+            e.ChangedRange.ClearStyle(blueStyle);
+            e.ChangedRange.SetStyle(blueStyle, m_urlRegex);
+
+            e.ChangedRange.ClearStyle(greenStyle);
+            e.ChangedRange.SetStyle(greenStyle, m_datetimeRegex);
+
+            e.ChangedRange.ClearStyle(yellowStyle);
+            e.ChangedRange.SetStyle(yellowStyle, m_httpVerbRegex);
+
+            e.ChangedRange.ClearStyle(redStyle);
+            e.ChangedRange.SetStyle(redStyle, m_httpStatusRegex);
         }
 
         private void AppendText(ProcfileEntry entry, string strText)

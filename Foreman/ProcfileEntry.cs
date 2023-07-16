@@ -12,6 +12,8 @@ namespace Foreman
     {
         private Procfile m_objProcfile = null;
 
+        private int m_port = 0;
+
         private int m_intIndex = 0;
 
         private string m_strName = null;
@@ -41,16 +43,27 @@ namespace Foreman
             m_strName = strName;
             m_strCommand = strCommand;
 
-            if (envVariables.Count > 0)
-            {
-                m_strCommand = ReplaceVariables(envVariables, strCommand);
-            }
-
-            if (!envVariables.ContainsKey("$PORT"))
+            if (!envVariables.ContainsKey("PORT"))
             {
                 m_strCommand = m_strCommand.Replace("$PORT", Port().ToString());
+            } else
+            {
+                int port = 0;
+                bool result = int.TryParse(envVariables["PORT"], out port);
+
+                if (result)
+                {
+                    port = Port(port);
+                    m_strCommand = m_strCommand.Replace("$PORT", port.ToString());
+                }
             }
 
+            if (envVariables.Count > 0)
+            {
+                m_strCommand = ReplaceVariables(envVariables, m_strCommand);
+            }
+
+            
             m_envVariables = envVariables;
         }
 
@@ -69,32 +82,14 @@ namespace Foreman
             return (String.Format(@"{{\cf{0} {1}  {2,-" + m_objProcfile.LongestNameLength() + "} |}} ", m_intIndex, time, m_strName));
         }
 
-        public int Port()
+        public int Port(int port = 5000)
         {
-            int port = (5000 + (100 * (m_intIndex - 1)));
 
-            while(IsPortOpen("localhost", port))
-            {
-                port++;
-            }
+            port = (port + (100 * (m_intIndex - 1)));
+            port = PortFinderService.GetPort(port);
+            this.m_port = port;
 
             return port;
-        }
-
-        public bool IsPortOpen(string host, int port)
-        {
-            try
-            {
-                using (var client = new TcpClient())
-                {
-                    client.Connect(host, port);
-                    return true;
-                }
-            }
-            catch
-            {
-                return false;
-            }
         }
 
         public void Start()
@@ -151,15 +146,16 @@ namespace Foreman
             m_objProcess.ErrorDataReceived += DataReceived;
             m_objProcess.Exited += ProcessExited;
 
-            TextReceived(this, "starting: " + m_strCommand);
+            TextReceived(this, "Starting: " + m_strCommand);
 
             m_objProcess.Start();
             //Process process = m_objProcess.Parent();
             //TextReceived(this, "Parent: " + process.ProcessName);
-            this.Active = !m_objProcess.HasExited;
 
             m_objProcess.BeginOutputReadLine();
             m_objProcess.BeginErrorReadLine();
+            this.Active = !m_objProcess.HasExited;
+
         }
 
         public void Stop()
@@ -173,7 +169,7 @@ namespace Foreman
             m_objProcess.KillAllSubProcesses();
             if (!m_objProcess.HasExited)
             {
-                m_objProcfile.Info(this, "stopping process");
+                m_objProcfile.Info(this, "Stopping process");
                 m_objProcess.Kill();
             }
         }
@@ -228,7 +224,8 @@ namespace Foreman
         private void ProcessExited(object objSender, EventArgs args)
         {
             this.Active = false;
-            m_objProcfile.Info(this, "process terminated");
+            PortFinderService.ReleasePort(this.m_port);
+            m_objProcfile.Info(this, "Process terminated");
         }
     }
 }
