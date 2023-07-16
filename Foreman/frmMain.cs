@@ -70,7 +70,6 @@ namespace Foreman
             m_objProcfile = new Procfile(strFilename);
             m_objProcfile.TextReceived += (ProcfileEntry objEntry, string strText) =>
             {
-                //Debug.WriteLine(strText);
                 AppendText(objEntry, strText);
             };
 
@@ -116,8 +115,6 @@ namespace Foreman
             if (strText == null)
                 return;
 
-            Debug.WriteLine($"===> {strText}");
-
             FastColoredTextBox txtConsole = null;
             bool hasKey = m_consoles.TryGetValue(entry.Name, out txtConsole);
             if (!hasKey)
@@ -141,7 +138,7 @@ namespace Foreman
 
         private void AppendText(string strText, FastColoredTextBox txtConsole)
         {
-            Debug.WriteLine($"**** {strText}");
+
             foreach (string strLine in strText.Split('\n'))
             {
                 //var text = String.Format(@"{{\rtf1\ansi {0} {1} {2}\line}}", ColorTable(), strHeader, strLine);
@@ -169,11 +166,6 @@ namespace Foreman
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            /*if (m_objProcfile != null)
-            {
-                m_objProcfile.Stop();
-            }*/
-
             Application.Exit();
         }
 

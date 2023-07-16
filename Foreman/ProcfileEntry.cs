@@ -103,21 +103,8 @@ namespace Foreman
             string[] parts = m_strCommand.Split(' ');
             string fileName = parts.First();
             string arguments = string.Join(" ", parts.Skip(1));
-            string fullPath = null;
             string directory = new FileInfo(m_objProcfile.FileName).DirectoryName;
-
-            if (fileName.EndsWith(".exe") || fileName.EndsWith(".bat"))
-            {
-                fullPath = this.WhereIs(fileName, directory);
-            } else
-            {
-                fullPath = this.WhereIs(fileName + ".exe", directory);
-                if(fullPath is null)
-                {
-                    fullPath = this.WhereIs(fileName + ".bat", directory);
-                }
-
-            }
+            string fullPath = this.WhereIs(fileName, directory);
 
             if (fullPath is null)
             {
@@ -191,27 +178,44 @@ namespace Foreman
             }
         }
 
-        // implementación de la función Where
         public string WhereIs(string command, string directory)
         {
 
-            string paths = Environment.GetEnvironmentVariable("PATH") + ';' + directory;
+            if (File.Exists(command))
+            {
+                return command;
+            }
+
+            string paths = directory + ';' + Environment.GetEnvironmentVariable("PATH");
             string[] folders = paths.Split(';');
 
-            foreach (string folder in folders)
+            List<string> names = new List<string>();
+            names.Add(command);
+
+            if(!(command.EndsWith(".exe") || command.EndsWith(".bat")))
             {
+                names.Add($"{command}.bat");
+                names.Add($"{command}.exe");
+            }
 
-                if(!Directory.Exists(folder)){
-                    continue;
-                }
-
-                string[] files = Directory.GetFiles(folder, command, SearchOption.TopDirectoryOnly);
-
-                if (files.Length > 0)
+            foreach(string name in names)
+            {
+                foreach (string folder in folders)
                 {
-                    return files[0];
+
+                    if (!Directory.Exists(folder))
+                    {
+                        continue;
+                    }
+
+                    string path = Path.Combine(folder, name); ;
+                    if (File.Exists(path))
+                    {
+                        return path;
+                    }
                 }
             }
+ 
 
             return null;
         }

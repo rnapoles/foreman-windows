@@ -46,7 +46,6 @@ namespace Foreman
                     {
                         if(TextReceived != null)
                         {
-                            //Debug.WriteLine(strData);
                             TextReceived(objEntry, strData);
                         }
                     };
