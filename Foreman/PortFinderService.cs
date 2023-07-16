@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Foreman
 {
 
     internal class PortFinderService
     {
-        private static Dictionary<int, bool> m_ports = new Dictionary<int, bool>();
+        private static Dictionary<int, bool> m_ports = new();
         private static Object m_lockObj = new Object();
 
         public static int GetPort(int port = 5000)

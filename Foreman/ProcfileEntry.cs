@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net.Sockets;
-using System.Text;
 
 namespace Foreman
 {
@@ -24,7 +22,7 @@ namespace Foreman
 
         public event Procfile.TextReceivedHandler TextReceived;
 
-        private Dictionary<string, string> m_envVariables = new Dictionary<string, string>();
+        private Dictionary<string, string> m_envVariables = new();
 
         public bool Active { private set; get; }
 

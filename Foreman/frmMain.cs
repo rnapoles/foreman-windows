@@ -18,8 +18,8 @@ namespace Foreman
         }
 
         private Procfile m_objProcfile = null;
-        private Dictionary<string, ProcfileEntry> m_processes = new Dictionary<string, ProcfileEntry>();
-        private Dictionary<string, FastColoredTextBox> m_consoles = new Dictionary<string, FastColoredTextBox>();
+        private Dictionary<string, ProcfileEntry> m_processes = new();
+        private Dictionary<string, FastColoredTextBox> m_consoles = new();
         private TextStyle blueStyle = new TextStyle(Brushes.Blue, null, FontStyle.Underline);
         private TextStyle greenStyle = new TextStyle(Brushes.Green, null, FontStyle.Bold);
         private TextStyle yellowStyle = new TextStyle(Brushes.Yellow, null, FontStyle.Bold);

@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using DotNetEnv;
 
@@ -17,7 +15,7 @@ namespace Foreman
         private string m_strFilename = null;
         private List<ProcfileEntry> m_arrProcfileEntries = null;
         private bool m_blnStarted = false;
-        private Dictionary<string, string> m_envVariables = new Dictionary<string, string>();
+        private Dictionary<string, string> m_envVariables = new();
 
         public Procfile(string strFilename)
         {
