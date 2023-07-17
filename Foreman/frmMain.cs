@@ -53,7 +53,6 @@ namespace Foreman
                 }
             }
 
-
             this.FormClosing += (s, e) =>
             {
                 if (m_objProcfile != null)

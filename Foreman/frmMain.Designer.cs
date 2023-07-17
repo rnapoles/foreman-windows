@@ -42,7 +42,7 @@
             this.tbiClear = new System.Windows.Forms.ToolStripButton();
             this.imageList = new System.Windows.Forms.ImageList(this.components);
             this.panel1 = new System.Windows.Forms.Panel();
-            this.tabControl = new System.Windows.Forms.TabControl();
+            this.tabControl = new TabControl();
             this.timer = new System.Windows.Forms.Timer(this.components);
             this.systrayIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.mnsMain.SuspendLayout();

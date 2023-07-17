@@ -55,14 +55,29 @@ namespace Foreman
 
         private void OpenEnvFile(string strFilename)
         {
+            var directory = new FileInfo(strFilename).DirectoryName + Path.DirectorySeparatorChar;
+            var path = directory + ".env";
+            List<string> routes = new();
 
-            var path = new FileInfo(strFilename).DirectoryName + Path.DirectorySeparatorChar + ".env";
+            m_envVariables.Clear();
+
             if (File.Exists(path))
             {
-                m_envVariables.Clear();
-                m_envVariables = Env.Load(path).ToDictionary();
+                routes.Add(path);
             }
-            
+
+            path = directory + ".env.local";
+            if (File.Exists(path))
+            {
+                routes.Add(path);
+            }
+
+            if(routes.Count > 0)
+            {
+                m_envVariables = Env.LoadMulti(routes.ToArray()).ToDictionary();
+            }
+
+
         }
 
         public string Header()
