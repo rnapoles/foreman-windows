@@ -42,7 +42,7 @@
             this.tbiClear = new System.Windows.Forms.ToolStripButton();
             this.imageList = new System.Windows.Forms.ImageList(this.components);
             this.panel1 = new System.Windows.Forms.Panel();
-            this.tabControl = new TabControl();
+            this.tabControl = new Foreman.TabControl();
             this.timer = new System.Windows.Forms.Timer(this.components);
             this.systrayIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.mnsMain.SuspendLayout();
@@ -164,6 +164,7 @@
             this.tabControl.SelectedIndex = 0;
             this.tabControl.Size = new System.Drawing.Size(806, 462);
             this.tabControl.TabIndex = 3;
+
             // 
             // timer
             // 
@@ -216,8 +217,8 @@
         private System.Windows.Forms.ImageList imageList;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Timer timer;
-        private System.Windows.Forms.TabControl tabControl;
         private System.Windows.Forms.NotifyIcon systrayIcon;
+        private TabControl tabControl;
     }
 }
 
