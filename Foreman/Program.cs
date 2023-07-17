@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Foreman.UI;
+using System;
 using System.Windows.Forms;
 
 namespace Foreman
@@ -18,7 +19,7 @@ namespace Foreman
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new frmMain());
+            Application.Run(new MainForm());
         }
     }
 }

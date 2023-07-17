@@ -1,6 +1,8 @@
-﻿namespace Foreman
+﻿using Foreman.UI.Components;
+
+namespace Foreman.UI
 {
-    partial class frmMain
+    partial class MainForm
     {
         /// <summary>
         /// Required designer variable.
@@ -29,7 +31,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.mnsMain = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openProcfileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -42,7 +44,7 @@
             this.tbiClear = new System.Windows.Forms.ToolStripButton();
             this.imageList = new System.Windows.Forms.ImageList(this.components);
             this.panel1 = new System.Windows.Forms.Panel();
-            this.tabControl = new Foreman.TabControl();
+            this.tabControl = new Foreman.UI.Components.TabControl();
             this.timer = new System.Windows.Forms.Timer(this.components);
             this.systrayIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.mnsMain.SuspendLayout();

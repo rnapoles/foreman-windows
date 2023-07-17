@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Net.Sockets;
 
-namespace Foreman
+namespace Foreman.Service
 {
 
     internal class PortFinderService

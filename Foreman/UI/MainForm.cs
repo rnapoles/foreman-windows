@@ -6,10 +6,12 @@ using System.IO;
 using System.Diagnostics;
 using FastColoredTextBoxNS;
 using System.Text.RegularExpressions;
+using Foreman.Domain;
+using Foreman.Infrastructure;
 
-namespace Foreman
+namespace Foreman.UI
 {
-    public partial class frmMain : Form
+    public partial class MainForm : Form
     {
 
         enum ToolbarAction
@@ -32,7 +34,7 @@ namespace Foreman
         private string m_httpStatusRegex = @"\[\d+\]";
         //private string m_logLevelRegex = @"ERROR|WARN|DEBUG|TRACE";
 
-        public frmMain()
+        public MainForm()
         {
             InitializeComponent();
 

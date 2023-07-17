@@ -1,10 +1,12 @@
-﻿using System;
+﻿using Foreman.Infrastructure;
+using Foreman.Service;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
-namespace Foreman
+namespace Foreman.Domain
 {
     class ProcfileEntry
     {

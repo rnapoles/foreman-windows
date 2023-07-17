@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Management;
 
-namespace Foreman
+namespace Foreman.Infrastructure
 {
     public static class ProcessExtensions
     {

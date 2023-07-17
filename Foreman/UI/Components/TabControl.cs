@@ -4,7 +4,7 @@ using System.Drawing.Drawing2D;
 using System;
 using System.Runtime.InteropServices;
 
-namespace Foreman
+namespace Foreman.UI.Components
 {
     /// <summary>
     /// Description of TabControl.

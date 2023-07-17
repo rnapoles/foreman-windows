@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading;
 using DotNetEnv;
 
-namespace Foreman
+namespace Foreman.Domain
 {
     class Procfile
     {
