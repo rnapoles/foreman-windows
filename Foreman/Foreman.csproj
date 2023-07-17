@@ -73,32 +73,29 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="TabStrip">
-      <HintPath>..\..\..\..\..\..\..\Down\Dev\DotNet\Libs\UI\Tabs\TabStrips\TabStrip.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="TabControl.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="DotNetEnv\Env.cs" />
-    <Compile Include="DotNetEnv\IEnvReader.cs" />
-    <Compile Include="DotNetEnv\IValue.cs" />
-    <Compile Include="DotNetEnv\LoadOptions.cs" />
-    <Compile Include="DotNetEnv\Parsers.cs" />
-    <Compile Include="PortFinderService.cs" />
-    <Compile Include="ProcessUtilities.cs" />
-    <Compile Include="ProcfileEntry.cs" />
-    <Compile Include="Procfile.cs" />
-    <Compile Include="frmMain.cs">
+    <Compile Include="3rd\DotNetEnv\Env.cs" />
+    <Compile Include="3rd\DotNetEnv\IEnvReader.cs" />
+    <Compile Include="3rd\DotNetEnv\IValue.cs" />
+    <Compile Include="3rd\DotNetEnv\LoadOptions.cs" />
+    <Compile Include="3rd\DotNetEnv\Parsers.cs" />
+    <Compile Include="Services\PortFinderService.cs" />
+    <Compile Include="Infrastructure\ProcessExtensions.cs" />
+    <Compile Include="Domain\ProcfileEntry.cs" />
+    <Compile Include="Domain\Procfile.cs" />
+    <Compile Include="UI\frmMain.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmMain.Designer.cs">
+    <Compile Include="UI\frmMain.Designer.cs">
       <DependentUpon>frmMain.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="frmMain.resx">
+    <EmbeddedResource Include="UI\frmMain.resx">
       <DependentUpon>frmMain.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -137,6 +134,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="app.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="UI\Components\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
