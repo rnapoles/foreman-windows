@@ -28,6 +28,8 @@ namespace Foreman.Domain
 
         public bool Active { private set; get; }
 
+        public string Id { private set; get; }
+
         public string Name
         {
             get
@@ -36,12 +38,24 @@ namespace Foreman.Domain
             }
         }
 
+        public Dictionary<string, string> EnvVariables
+        {
+            get
+            {
+                return m_envVariables;
+            }
+        }
+
         public ProcfileEntry(Procfile objProcfile, int intIndex, string strName, string strCommand, Dictionary<string, string> envVariables)
         {
+
+            this.Id = Guid.NewGuid().ToString();
+
             m_objProcfile = objProcfile;
             m_intIndex = intIndex;
             m_strName = strName;
             m_strCommand = strCommand;
+            m_envVariables = envVariables;
 
             if (!envVariables.ContainsKey("PORT"))
             {
@@ -58,13 +72,7 @@ namespace Foreman.Domain
                 }
             }
 
-            if (envVariables.Count > 0)
-            {
-                m_strCommand = ReplaceVariables(envVariables, m_strCommand);
-            }
-
-            
-            m_envVariables = envVariables;
+            m_strCommand = ReplaceVariables(envVariables, m_strCommand);
         }
 
         public string ReplaceVariables(Dictionary<string, string> dictionary, string text)
@@ -74,12 +82,6 @@ namespace Foreman.Domain
                 text = text.Replace($"${kvp.Key}", kvp.Value);
             }
             return text;
-        }
-
-        public string Header()
-        {
-            var time = DateTime.Now.ToString("HH:mm:ss");
-            return (String.Format(@"{{\cf{0} {1}  {2,-" + m_objProcfile.LongestNameLength() + "} |}} ", m_intIndex, time, m_strName));
         }
 
         public int Port(int port = 5000)
@@ -126,7 +128,8 @@ namespace Foreman.Domain
                     {
                         environmentVariables[key] = value;
                     }
-                    TextReceived(this, $"{key} = {value}");
+
+                    //TextReceived(this, $"{key} = {value}");
                 }
             }
 

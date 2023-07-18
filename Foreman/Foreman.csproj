@@ -55,12 +55,6 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FastColoredTextBox, Version=2.16.24.0, Culture=neutral, PublicKeyToken=fb8aa12b994ef61b, processorArchitecture=MSIL">
-      <HintPath>..\packages\FCTB.2.16.24\lib\FastColoredTextBox.dll</HintPath>
-    </Reference>
-    <Reference Include="Sprache, Version=2.3.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Sprache.2.3.1\lib\net45\Sprache.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Design" />
@@ -75,14 +69,125 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="UI\Components\DictionaryPropertyDescriptor.cs" />
+    <Compile Include="UI\Components\DictionaryPropertyGridAdapter.cs" />
+    <Compile Include="UI\Components\ReadOnlyPropGrid.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="UI\Components\TabControl.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="3rd\DotNetEnv\Env.cs" />
-    <Compile Include="3rd\DotNetEnv\IEnvReader.cs" />
-    <Compile Include="3rd\DotNetEnv\IValue.cs" />
-    <Compile Include="3rd\DotNetEnv\LoadOptions.cs" />
-    <Compile Include="3rd\DotNetEnv\Parsers.cs" />
+    <Compile Include="3rd\DotEnvCore\Binder\BinderException.cs" />
+    <Compile Include="3rd\DotEnvCore\Binder\EnvBinder.ConfigurationMethods.cs" />
+    <Compile Include="3rd\DotEnvCore\Binder\EnvBinder.cs" />
+    <Compile Include="3rd\DotEnvCore\Binder\EnvBinder.HelperMethods.cs" />
+    <Compile Include="3rd\DotEnvCore\Binder\EnvBinderOptions.cs" />
+    <Compile Include="3rd\DotEnvCore\Binder\EnvKeyAttribute.cs" />
+    <Compile Include="3rd\DotEnvCore\Binder\IEnvBinder.cs" />
+    <Compile Include="3rd\DotEnvCore\Constants\EnvironmentNames.cs" />
+    <Compile Include="3rd\DotEnvCore\Constants\ExceptionMessages.cs" />
+    <Compile Include="3rd\DotEnvCore\Extensions\EnumerableExtensions.cs" />
+    <Compile Include="3rd\DotEnvCore\Extensions\StringExtensions.cs" />
+    <Compile Include="3rd\DotEnvCore\Extensions\TypeExtensions.cs" />
+    <Compile Include="3rd\DotEnvCore\Helpers\DotEnvHelper.cs" />
+    <Compile Include="3rd\DotEnvCore\Helpers\Env.cs" />
+    <Compile Include="3rd\DotEnvCore\Helpers\EnvValidationResult.cs" />
+    <Compile Include="3rd\DotEnvCore\Helpers\FormattingMessage.cs" />
+    <Compile Include="3rd\DotEnvCore\Loader\EnvFile.cs" />
+    <Compile Include="3rd\DotEnvCore\Loader\EnvFileNames.cs" />
+    <Compile Include="3rd\DotEnvCore\Loader\EnvLoader.ConfigurationMethods.cs" />
+    <Compile Include="3rd\DotEnvCore\Loader\EnvLoader.cs" />
+    <Compile Include="3rd\DotEnvCore\Loader\EnvLoader.HelperMethods.cs" />
+    <Compile Include="3rd\DotEnvCore\Loader\EnvLoaderOptions.cs" />
+    <Compile Include="3rd\DotEnvCore\Loader\IEnvLoader.cs" />
+    <Compile Include="3rd\DotEnvCore\Parser\ConcatKeysOptions.cs" />
+    <Compile Include="3rd\DotEnvCore\Parser\EnvParser.ConfigurationMethods.cs" />
+    <Compile Include="3rd\DotEnvCore\Parser\EnvParser.cs" />
+    <Compile Include="3rd\DotEnvCore\Parser\EnvParser.HelperMethods.cs" />
+    <Compile Include="3rd\DotEnvCore\Parser\EnvParserOptions.cs" />
+    <Compile Include="3rd\DotEnvCore\Parser\IEnvParser.cs" />
+    <Compile Include="3rd\DotEnvCore\Parser\ParserException.cs" />
+    <Compile Include="3rd\DotEnvCore\Providers\DefaultEnvironmentProvider.cs" />
+    <Compile Include="3rd\DotEnvCore\Providers\DictionaryProvider.cs" />
+    <Compile Include="3rd\DotEnvCore\Providers\EnvironmentVariablesProviderExtensions.cs" />
+    <Compile Include="3rd\DotEnvCore\Providers\IEnvironmentVariablesProvider.cs" />
+    <Compile Include="3rd\DotEnvCore\Reader\EnvAccessorExtensions.cs" />
+    <Compile Include="3rd\DotEnvCore\Reader\EnvReader.cs" />
+    <Compile Include="3rd\DotEnvCore\Reader\EnvReader.Env.cs" />
+    <Compile Include="3rd\DotEnvCore\Reader\EnvReader.Get.cs" />
+    <Compile Include="3rd\DotEnvCore\Reader\EnvReader.Try.cs" />
+    <Compile Include="3rd\DotEnvCore\Reader\IEnvReader.cs" />
+    <Compile Include="3rd\DotEnvCore\Reader\VariableNotSetException.cs" />
+    <Compile Include="3rd\DotEnvCore\Validator\EnvValidator.cs" />
+    <Compile Include="3rd\DotEnvCore\Validator\EnvValidatorOptions.cs" />
+    <Compile Include="3rd\DotEnvCore\Validator\IEnvValidator.cs" />
+    <Compile Include="3rd\DotEnvCore\Validator\RequiredKeysNotPresentException.cs" />
+    <Compile Include="3rd\FastColoredTextBox\AutocompleteItem.cs" />
+    <Compile Include="3rd\FastColoredTextBox\AutocompleteMenu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="3rd\FastColoredTextBox\Bookmarks.cs" />
+    <Compile Include="3rd\FastColoredTextBox\Char.cs" />
+    <Compile Include="3rd\FastColoredTextBox\CommandManager.cs" />
+    <Compile Include="3rd\FastColoredTextBox\Commands.cs" />
+    <Compile Include="3rd\FastColoredTextBox\DocumentMap.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="3rd\FastColoredTextBox\EncodingDetector.cs" />
+    <Compile Include="3rd\FastColoredTextBox\ExportToHTML.cs" />
+    <Compile Include="3rd\FastColoredTextBox\ExportToRTF.cs" />
+    <Compile Include="3rd\FastColoredTextBox\FastColoredTextBox.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="3rd\FastColoredTextBox\FileTextSource.cs" />
+    <Compile Include="3rd\FastColoredTextBox\FindForm.Designer.cs" />
+    <Compile Include="3rd\FastColoredTextBox\FindForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="3rd\FastColoredTextBox\GoToForm.Designer.cs" />
+    <Compile Include="3rd\FastColoredTextBox\GoToForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <EmbeddedResource Include="3rd\FastColoredTextBox\GoToForm.resx">
+      <DependentUpon>GoToForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Include="3rd\FastColoredTextBox\Hints.cs" />
+    <Compile Include="3rd\FastColoredTextBox\Hotkeys.cs" />
+    <Compile Include="3rd\FastColoredTextBox\HotkeysEditorForm.Designer.cs" />
+    <Compile Include="3rd\FastColoredTextBox\HotkeysEditorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <EmbeddedResource Include="3rd\FastColoredTextBox\HotkeysEditorForm.resx">
+      <DependentUpon>HotkeysEditorForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Include="3rd\FastColoredTextBox\LimitedStack.cs" />
+    <Compile Include="3rd\FastColoredTextBox\Line.cs" />
+    <Compile Include="3rd\FastColoredTextBox\LineNumberFormatting.cs" />
+    <Compile Include="3rd\FastColoredTextBox\LinesAccessor.cs" />
+    <Compile Include="3rd\FastColoredTextBox\MacrosManager.cs" />
+    <Compile Include="3rd\FastColoredTextBox\Place.cs" />
+    <Compile Include="3rd\FastColoredTextBox\PlatformType.cs" />
+    <Compile Include="3rd\FastColoredTextBox\Range.cs" />
+    <Compile Include="3rd\FastColoredTextBox\ReplaceForm.Designer.cs" />
+    <Compile Include="3rd\FastColoredTextBox\ReplaceForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <EmbeddedResource Include="3rd\FastColoredTextBox\ReplaceForm.resx">
+      <DependentUpon>ReplaceForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Include="3rd\FastColoredTextBox\Ruler.Designer.cs" />
+    <Compile Include="3rd\FastColoredTextBox\Ruler.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="3rd\FastColoredTextBox\Style.cs" />
+    <Compile Include="3rd\FastColoredTextBox\SyntaxDescriptor.cs" />
+    <Compile Include="3rd\FastColoredTextBox\SyntaxHighlighter.cs" />
+    <Compile Include="3rd\FastColoredTextBox\TextSource.cs" />
+    <Compile Include="3rd\FastColoredTextBox\TypeDescriptor.cs" />
+    <Compile Include="3rd\FastColoredTextBox\UnfocusablePanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="3rd\FastColoredTextBox\VisualMarker.cs" />
     <Compile Include="Services\PortFinderService.cs" />
     <Compile Include="Infrastructure\ProcessExtensions.cs" />
     <Compile Include="Domain\ProcfileEntry.cs" />

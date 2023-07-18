@@ -1,9 +1,10 @@
-﻿using System;
+﻿using DotEnv.Core;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using DotNetEnv;
+
 
 namespace Foreman.Domain
 {
@@ -56,25 +57,21 @@ namespace Foreman.Domain
         private void OpenEnvFile(string strFilename)
         {
             var directory = new FileInfo(strFilename).DirectoryName + Path.DirectorySeparatorChar;
-            var path = directory + ".env";
-            List<string> routes = new();
-
+            List<string> routes = new() { ".env", ".env.dev.local", ".env.local" };
+            var envLoader = new EnvLoader().AllowOverwriteExistingVars();
             m_envVariables.Clear();
 
-            if (File.Exists(path))
+            foreach(string route in routes)
             {
-                routes.Add(path);
+                var path = directory + route;
+                envLoader
+                   .AddEnvFile(path);
             }
 
-            path = directory + ".env.local";
-            if (File.Exists(path))
+            var environmentVariables = envLoader.Load();
+            if (environmentVariables.Count() > 0)
             {
-                routes.Add(path);
-            }
-
-            if(routes.Count > 0)
-            {
-                m_envVariables = Env.LoadMulti(routes.ToArray()).ToDictionary();
+                m_envVariables = environmentVariables.ToDictionary();
             }
 
 
@@ -104,7 +101,7 @@ namespace Foreman.Domain
             if (!m_blnStarted)
                 return;
 
-            StatusReceived("stopping all processes");
+            StatusReceived("Stopping all processes");
 
             m_blnStarted = false;
 

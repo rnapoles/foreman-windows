@@ -8,6 +8,7 @@ using FastColoredTextBoxNS;
 using System.Text.RegularExpressions;
 using Foreman.Domain;
 using Foreman.Infrastructure;
+using Foreman.UI.Components;
 
 namespace Foreman.UI
 {
@@ -16,7 +17,7 @@ namespace Foreman.UI
 
         enum ToolbarAction
         {
-            Start, Stop, Clear
+            Start, Stop, Info, Clear
         }
 
         private Procfile m_objProcfile = null;
@@ -114,10 +115,17 @@ namespace Foreman.UI
 
             foreach(var item in m_objProcfile.ProcfileEntries)
             {
+
+                var id = item.Id;
                 var console = new FastColoredTextBox();
                 var tabPage = new System.Windows.Forms.TabPage();
+                var propertyGrid = new ReadOnlyPropGrid();
+                var splitContainer = new System.Windows.Forms.SplitContainer();
 
-                console.Dock = System.Windows.Forms.DockStyle.Fill;
+                splitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+                splitContainer.Name = "s" + id;
+
+                console.Dock = DockStyle.Fill;
                 //txtConsole.Name = "txtConsole";
                 console.Text = "";
                 console.ReadOnly = true;
@@ -126,15 +134,25 @@ namespace Foreman.UI
                 console.TextChangedDelayed += Console_TextChangedDelayed;
                 console.MouseDown += Console_MouseDown;
                 console.MouseMove += Console_MouseMove;
+                console.Tag = id;
+                console.BorderStyle = BorderStyle.Fixed3D;
 
+                propertyGrid.Dock = DockStyle.Fill;
+                propertyGrid.SelectedObject = new DictionaryPropertyGridAdapter(item.EnvVariables);
+                propertyGrid.PropertySort = PropertySort.Alphabetical;
+                propertyGrid.Name = "p" + id;
+                splitContainer.SplitterDistance = 30;
 
                 //tabPage.SuspendLayout();
                 //tabPage.BackColor = Color.Violet;
                 var name = item.Name;
                 tabPage.Text = name;
-                tabPage.Controls.Add(console);
-                m_consoles.Add(name, console);
-                m_processes.Add(name, item);
+                tabPage.Tag = id;
+                splitContainer.Panel1.Controls.Add(propertyGrid);
+                splitContainer.Panel2.Controls.Add(console);
+                tabPage.Controls.Add(splitContainer);
+                m_consoles.Add(id, console);
+                m_processes.Add(id, item);
                 tabControl.Controls.Add(tabPage);
             }
 
@@ -200,13 +218,11 @@ namespace Foreman.UI
                 return;
 
             FastColoredTextBox txtConsole = null;
-            bool hasKey = m_consoles.TryGetValue(entry.Name, out txtConsole);
+            bool hasKey = m_consoles.TryGetValue(entry.Id, out txtConsole);
             if (!hasKey)
             {
                 return;
             }
-
-            var strHeader = entry.Header();
 
             if (this.InvokeRequired)
             {
@@ -235,11 +251,6 @@ namespace Foreman.UI
             //txtConsole.ScrollToCaret();
         }
 
-        private string ColorTable()
-        {
-            return (@"{\colortbl;\red0\green204\blue204;\red255\green255\blue0;\red0\green204\blue0;\red204\green0\blue204;\red204\green0\blue0;}");
-        }
-
         private void stopStripMenuItem_Click(object sender, EventArgs e)
         {
             if (m_objProcfile != null)
@@ -266,20 +277,25 @@ namespace Foreman.UI
 
         private void tbiStart_Click(object sender, EventArgs e)
         {
-            this.executeAction(ToolbarAction.Start);
+            this.ExecuteAction(ToolbarAction.Start);
         }
 
         private void tbiStop_Click(object sender, EventArgs e)
         {
-            this.executeAction(ToolbarAction.Stop);
+            this.ExecuteAction(ToolbarAction.Stop);
+        }
+
+        private void tbiInfo_Click(object sender, EventArgs e)
+        {
+            this.ExecuteAction(ToolbarAction.Info);
         }
 
         private void tbiClear_Click(object sender, EventArgs e)
         {
-            this.executeAction(ToolbarAction.Clear);
+            this.ExecuteAction(ToolbarAction.Clear);
         }
 
-        private void executeAction(ToolbarAction action)
+        private void ExecuteAction(ToolbarAction action)
         {
             var active = tabControl.TabPages.Count > 0;
             active = active && m_processes.Count > 0;
@@ -291,9 +307,9 @@ namespace Foreman.UI
 
             int index = tabControl.SelectedIndex;
             TabPage tabPage = tabControl.TabPages[index];
-            string text = tabPage.Text;
+            string id = (string) tabPage.Tag;
             ProcfileEntry proc = null;
-            bool hasKey = m_processes.TryGetValue(text, out proc);
+            bool hasKey = m_processes.TryGetValue(id, out proc);
             if (!hasKey)
             {
                 return;
@@ -305,10 +321,14 @@ namespace Foreman.UI
             } else if(action == ToolbarAction.Stop)
             {
                 proc.Stop();
-            } else
+            } else if(action == ToolbarAction.Info)
+            {
+                SplitContainer splitContainer = (SplitContainer)Controls.Find("s" + id, true)[0];
+                splitContainer.Panel1Collapsed = !splitContainer.Panel1Collapsed;
+            }
             {
                 FastColoredTextBox console;
-                hasKey = m_consoles.TryGetValue(text, out console);
+                hasKey = m_consoles.TryGetValue(id, out console);
                 if (hasKey)
                 {
                     console.Clear();
@@ -326,21 +346,24 @@ namespace Foreman.UI
             {
                 int index = tabControl.SelectedIndex;
                 TabPage tabPage = tabControl.TabPages[index];
-                string text = tabPage.Text;
-                ProcfileEntry proc = null;
-                bool hasKey = m_processes.TryGetValue(text, out proc);
-                if (hasKey)
+                string id = tabPage.Tag?.ToString();
+                active = id != null;
+
+                if (active)
                 {
-                    tbiStart.Enabled = !proc.Active;
-                    tbiStop.Enabled = proc.Active;
+                    ProcfileEntry proc = null;
+                    bool hasKey = m_processes.TryGetValue(id, out proc);
+                    if (hasKey)
+                    {
+                        tbiStart.Enabled = !proc.Active;
+                        tbiStop.Enabled = proc.Active;
+                    }
                 }
+
+
             }
 
             toolBar.Enabled = active;
-
-
-            //Text = $"{counter++}";
-
         }
 
         private void systrayIcon_DoubleClick(object sender, EventArgs e)
@@ -368,15 +391,16 @@ namespace Foreman.UI
             {
                 int index = tabControl.SelectedIndex;
                 TabPage tabPage = tabControl.TabPages[index];
-                string text = tabPage.Text;
+                string id = tabPage.Tag.ToString();
 
                 FastColoredTextBox console;
-                var hasKey = m_consoles.TryGetValue(text, out console);
+                var hasKey = m_consoles.TryGetValue(id, out console);
                 if (hasKey)
                 {
                     console.Clear();
                 }
             }
         }
+
     }
 }
