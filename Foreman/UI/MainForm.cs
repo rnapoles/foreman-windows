@@ -1,14 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Windows.Forms;
-using System.IO;
-using System.Diagnostics;
-using FastColoredTextBoxNS;
-using System.Text.RegularExpressions;
+﻿using FastColoredTextBoxNS;
 using Foreman.Domain;
 using Foreman.Infrastructure;
 using Foreman.UI.Components;
+using GrayIris.Utilities.UI.Controls;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Drawing;
+using System.IO;
+using System.Text.RegularExpressions;
+using System.Windows.Forms;
 
 namespace Foreman.UI
 {
@@ -38,6 +39,7 @@ namespace Foreman.UI
         public MainForm()
         {
             InitializeComponent();
+            ConfigureTabControl();
 
             this.KeyPreview = true;
             toolBar.ImageScalingSize = new Size(24, 24);
@@ -73,6 +75,32 @@ namespace Foreman.UI
             {
                 OpenProcfile("Procfile");
             }
+
+        }
+
+        private void ConfigureTabControl()
+        {
+            tabControl.ActiveColor = System.Drawing.SystemColors.Control;
+            tabControl.BackColor = System.Drawing.SystemColors.Control;
+            tabControl.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
+            tabControl.CloseButton = false;
+            tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            tabControl.HoverColor = System.Drawing.Color.Azure;
+            //tabControl.ImageIndex = 0;
+            //tabControl.ImageList = this._images;
+            //tabControl.NewTabButton = true;
+            //tabControl.SelectedTab = this._tabpage1;
+            //tabControl.SelectedIndex = 0;
+            tabControl.InactiveColor = System.Drawing.SystemColors.Window;
+            tabControl.Location = new System.Drawing.Point(0, 24);
+            tabControl.Name = "_tabs";
+            tabControl.OverIndex = -1;
+            tabControl.ScrollButtonStyle = GrayIris.Utilities.UI.Controls.YaScrollButtonStyle.Never;
+            tabControl.Size = new System.Drawing.Size(838, 491);
+            tabControl.TabDock = System.Windows.Forms.DockStyle.Top;
+            tabControl.TabDrawer = new XlTabDrawer();
+            tabControl.TabFont = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+
         }
 
         private void openProcfileToolStripMenuItem_Click(object sender, EventArgs e)
@@ -90,7 +118,7 @@ namespace Foreman.UI
                 m_objProcfile.Stop();
             }
 
-            tabControl.TabPages.Clear();
+            tabControl.Controls.Clear();
             m_consoles.Clear();
             m_processes.Clear();
 
@@ -113,20 +141,30 @@ namespace Foreman.UI
                 
             };
 
-            foreach(var item in m_objProcfile.ProcfileEntries)
+            int c = 0;
+            tabControl.SuspendLayout();
+            this.SuspendLayout();
+
+            foreach (var item in m_objProcfile.ProcfileEntries)
             {
 
                 var id = item.Id;
                 var console = new FastColoredTextBox();
-                var tabPage = new System.Windows.Forms.TabPage();
+                var tabPage = new YaTabPage();
                 var propertyGrid = new ReadOnlyPropGrid();
                 var splitContainer = new System.Windows.Forms.SplitContainer();
+
+                tabPage.SuspendLayout();
+                splitContainer.Panel1.SuspendLayout();
+                splitContainer.Panel2.SuspendLayout();
+
 
                 splitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
                 splitContainer.Name = "s" + id;
 
                 console.Dock = DockStyle.Fill;
                 //txtConsole.Name = "txtConsole";
+                console.Tag = id;
                 console.Text = "";
                 console.ReadOnly = true;
                 console.ForeColor = Color.White;
@@ -134,7 +172,6 @@ namespace Foreman.UI
                 console.TextChangedDelayed += Console_TextChangedDelayed;
                 console.MouseDown += Console_MouseDown;
                 console.MouseMove += Console_MouseMove;
-                console.Tag = id;
                 console.BorderStyle = BorderStyle.Fixed3D;
 
                 propertyGrid.Dock = DockStyle.Fill;
@@ -143,18 +180,37 @@ namespace Foreman.UI
                 propertyGrid.Name = "p" + id;
                 splitContainer.SplitterDistance = 30;
 
-                //tabPage.SuspendLayout();
                 //tabPage.BackColor = Color.Violet;
                 var name = item.Name;
-                tabPage.Text = name;
                 tabPage.Tag = id;
+                tabPage.Text = $"   {name}   ";
+                tabPage.Dock = System.Windows.Forms.DockStyle.Fill;
+                tabPage.Location = new System.Drawing.Point(4, 31);
+                tabPage.Size = new System.Drawing.Size(830, 456);
+                tabPage.TabIndex = c++;
+                tabPage.Width = 100;
+
                 splitContainer.Panel1.Controls.Add(propertyGrid);
                 splitContainer.Panel2.Controls.Add(console);
                 tabPage.Controls.Add(splitContainer);
                 m_consoles.Add(id, console);
                 m_processes.Add(id, item);
                 tabControl.Controls.Add(tabPage);
+
+                splitContainer.Panel1.ResumeLayout(true);
+                splitContainer.Panel2.ResumeLayout(true);
+                tabPage.ResumeLayout(true);
+
+                splitContainer.Panel1.PerformLayout();
+                splitContainer.Panel2.PerformLayout();
+                tabPage.PerformLayout();
+
             }
+
+            tabControl.ResumeLayout(false);
+            tabControl.PerformLayout();
+            this.ResumeLayout(false);
+            this.PerformLayout();
 
             m_objProcfile.Start();
         }
@@ -270,11 +326,6 @@ namespace Foreman.UI
             Process.GetCurrentProcess().KillAllSubProcesses();
         }
 
-        private void tabControl_TabIndexChanged(object sender, EventArgs e)
-        {
-            MessageBox.Show(tabControl.TabPages[tabControl.TabIndex].Name);
-        }
-
         private void tbiStart_Click(object sender, EventArgs e)
         {
             this.ExecuteAction(ToolbarAction.Start);
@@ -297,7 +348,7 @@ namespace Foreman.UI
 
         private void ExecuteAction(ToolbarAction action)
         {
-            var active = tabControl.TabPages.Count > 0;
+            var active = tabControl.Controls.Count > 0;
             active = active && m_processes.Count > 0;
 
             if (!active)
@@ -306,7 +357,8 @@ namespace Foreman.UI
             }
 
             int index = tabControl.SelectedIndex;
-            TabPage tabPage = tabControl.TabPages[index];
+
+            Control tabPage = tabControl.Controls[index];
             string id = (string) tabPage.Tag;
             ProcfileEntry proc = null;
             bool hasKey = m_processes.TryGetValue(id, out proc);
@@ -339,13 +391,13 @@ namespace Foreman.UI
 
         private void timer_Tick(object sender, EventArgs e)
         {
-            var active = tabControl.TabPages.Count > 0;
+            var active = tabControl.Controls.Count > 0;
             active = active && m_processes.Count > 0;
 
             if (active)
             {
                 int index = tabControl.SelectedIndex;
-                TabPage tabPage = tabControl.TabPages[index];
+                Control tabPage = tabControl.Controls[index];
                 string id = tabPage.Tag?.ToString();
                 active = id != null;
 
@@ -390,7 +442,7 @@ namespace Foreman.UI
             if (e.Control == true &&  key == "L")
             {
                 int index = tabControl.SelectedIndex;
-                TabPage tabPage = tabControl.TabPages[index];
+                Control tabPage = tabControl.Controls[index];
                 string id = tabPage.Tag.ToString();
 
                 FastColoredTextBox console;

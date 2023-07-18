@@ -1,4 +1,5 @@
 ﻿using Foreman.UI.Components;
+using GrayIris.Utilities.UI.Controls;
 
 namespace Foreman.UI
 {
@@ -41,13 +42,13 @@ namespace Foreman.UI
             this.toolBar = new System.Windows.Forms.ToolStrip();
             this.tbiStart = new System.Windows.Forms.ToolStripButton();
             this.tbiStop = new System.Windows.Forms.ToolStripButton();
+            this.tbiInfo = new System.Windows.Forms.ToolStripButton();
             this.tbiClear = new System.Windows.Forms.ToolStripButton();
             this.imageList = new System.Windows.Forms.ImageList(this.components);
             this.panel1 = new System.Windows.Forms.Panel();
-            this.tabControl = new Foreman.UI.Components.TabControl();
+            this.tabControl = new GrayIris.Utilities.UI.Controls.YaTabControl();
             this.timer = new System.Windows.Forms.Timer(this.components);
             this.systrayIcon = new System.Windows.Forms.NotifyIcon(this.components);
-            this.tbiInfo = new System.Windows.Forms.ToolStripButton();
             this.mnsMain.SuspendLayout();
             this.toolBar.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -77,21 +78,21 @@ namespace Foreman.UI
             // openProcfileToolStripMenuItem
             // 
             this.openProcfileToolStripMenuItem.Name = "openProcfileToolStripMenuItem";
-            this.openProcfileToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openProcfileToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
             this.openProcfileToolStripMenuItem.Text = "&Open Procfile...";
             this.openProcfileToolStripMenuItem.Click += new System.EventHandler(this.openProcfileToolStripMenuItem_Click);
             // 
             // stopStripMenuItem
             // 
             this.stopStripMenuItem.Name = "stopStripMenuItem";
-            this.stopStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.stopStripMenuItem.Size = new System.Drawing.Size(155, 22);
             this.stopStripMenuItem.Text = "Stop";
             this.stopStripMenuItem.Click += new System.EventHandler(this.stopStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
             this.exitToolStripMenuItem.Text = "E&xit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -131,6 +132,17 @@ namespace Foreman.UI
             this.tbiStop.Text = "Stop";
             this.tbiStop.Click += new System.EventHandler(this.tbiStop_Click);
             // 
+            // tbiInfo
+            // 
+            this.tbiInfo.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tbiInfo.Image = ((System.Drawing.Image)(resources.GetObject("tbiInfo.Image")));
+            this.tbiInfo.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbiInfo.Name = "tbiInfo";
+            this.tbiInfo.Size = new System.Drawing.Size(23, 22);
+            this.tbiInfo.Text = "toolStripButton1";
+            this.tbiInfo.ToolTipText = "Enviroment vars";
+            this.tbiInfo.Click += new System.EventHandler(this.tbiInfo_Click);
+            // 
             // tbiClear
             // 
             this.tbiClear.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -162,14 +174,26 @@ namespace Foreman.UI
             // 
             // tabControl
             // 
+            this.tabControl.ActiveColor = System.Drawing.SystemColors.Control;
+            this.tabControl.BackColor = System.Drawing.SystemColors.Control;
+            this.tabControl.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
+            this.tabControl.CloseButton = false;
             this.tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabControl.ItemSize = new System.Drawing.Size(0, 15);
+            this.tabControl.HoverColor = System.Drawing.Color.Silver;
+            this.tabControl.ImageIndex = -1;
+            this.tabControl.ImageList = null;
+            this.tabControl.InactiveColor = System.Drawing.SystemColors.Window;
             this.tabControl.Location = new System.Drawing.Point(0, 0);
-            this.tabControl.Multiline = true;
             this.tabControl.Name = "tabControl";
-            this.tabControl.Padding = new System.Drawing.Point(9, 0);
-            this.tabControl.SelectedIndex = 0;
+            this.tabControl.NewTabButton = false;
+            this.tabControl.OverIndex = -1;
+            this.tabControl.ScrollButtonStyle = GrayIris.Utilities.UI.Controls.YaScrollButtonStyle.Always;
+            this.tabControl.SelectedIndex = -1;
+            this.tabControl.SelectedTab = null;
             this.tabControl.Size = new System.Drawing.Size(806, 462);
+            this.tabControl.TabDock = System.Windows.Forms.DockStyle.Top;
+            this.tabControl.TabDrawer = null;
+            this.tabControl.TabFont = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tabControl.TabIndex = 3;
             // 
             // timer
@@ -183,17 +207,6 @@ namespace Foreman.UI
             this.systrayIcon.Text = "Foreman";
             this.systrayIcon.Visible = true;
             this.systrayIcon.DoubleClick += new System.EventHandler(this.systrayIcon_DoubleClick);
-            // 
-            // tbiInfo
-            // 
-            this.tbiInfo.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.tbiInfo.Image = ((System.Drawing.Image)(resources.GetObject("tbiInfo.Image")));
-            this.tbiInfo.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tbiInfo.Name = "tbiInfo";
-            this.tbiInfo.Size = new System.Drawing.Size(23, 22);
-            this.tbiInfo.Text = "toolStripButton1";
-            this.tbiInfo.ToolTipText = "Enviroment vars";
-            this.tbiInfo.Click += new System.EventHandler(this.tbiInfo_Click);
             // 
             // MainForm
             // 
@@ -235,7 +248,7 @@ namespace Foreman.UI
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Timer timer;
         private System.Windows.Forms.NotifyIcon systrayIcon;
-        private TabControl tabControl;
+        private YaTabControl tabControl;
         private System.Windows.Forms.ToolStripButton tbiInfo;
     }
 }

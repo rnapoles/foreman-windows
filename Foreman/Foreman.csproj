@@ -69,6 +69,36 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="3rd\YaTabControl\Delegates.cs" />
+    <Compile Include="3rd\YaTabControl\Enums.cs" />
+    <Compile Include="3rd\YaTabControl\NewTabEventArgs.cs" />
+    <Compile Include="3rd\YaTabControl\OvalTabDrawer.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="3rd\YaTabControl\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="3rd\YaTabControl\TabChangingEventArgs.cs" />
+    <Compile Include="3rd\YaTabControl\TabClosingEventArgs.cs" />
+    <Compile Include="3rd\YaTabControl\VsTabDrawer.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="3rd\YaTabControl\XlTabDrawer.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="3rd\YaTabControl\YaTabControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="3rd\YaTabControl\YaTabControlDesigner.cs" />
+    <Compile Include="3rd\YaTabControl\YaTabDrawerBase.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="3rd\YaTabControl\YaTabPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="3rd\YaTabControl\YaTabPageDesigner.cs" />
     <Compile Include="UI\Components\DictionaryPropertyDescriptor.cs" />
     <Compile Include="UI\Components\DictionaryPropertyGridAdapter.cs" />
     <Compile Include="UI\Components\ReadOnlyPropGrid.cs">
@@ -200,6 +230,13 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="3rd\YaTabControl\Resources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="3rd\YaTabControl\YaTabControl.resx" />
+    <EmbeddedResource Include="3rd\YaTabControl\YaTabPage.resx" />
     <EmbeddedResource Include="UI\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -238,6 +275,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <None Include="3rd\YaTabControl\Resources\x.png" />
     <Content Include="app.ico" />
   </ItemGroup>
   <ItemGroup />
